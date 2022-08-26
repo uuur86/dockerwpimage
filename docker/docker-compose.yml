@@ -20,7 +20,7 @@ services:
 
     volumes:
       - wordpress_host:/var/www/html
-      - ./../localfiles:/var/www/html:wro
+      # - ./../localfiles:/var/www/html:wro
     networks:
       - wordpress_net
     container_name: wordpress_host
