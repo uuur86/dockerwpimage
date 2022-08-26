@@ -1,0 +1,24 @@
+# change this variables for security reasons
+ARG MYSQL_DATABASE="wp_docker"
+ARG MYSQL_USER="dockertest1"
+ARG MYSQL_PASSWORD="dockertest1"
+ARG MYSQL_RANDOM_ROOT_PASSWORD=1
+
+ARG WORDPRESS_DB_HOST="localhost"
+ARG WORDPRESS_DB_USER=${MYSQL_USER}
+ARG WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+ARG WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+ARG WORDPRESS_TABLE_PREFIX="wp_"
+ARG WORDPRESS_DEBUG=1
+
+FROM mysql:5.7 AS MYSQLDB
+
+EXPOSE 3306
+
+FROM wordpress:latest AS WP
+WORKDIR /usr/src/wordpress
+RUN set -eux; \
+	find /etc/apache2 -name '*.conf' -type f -exec sed -ri -e "s!/var/www/html!$PWD!g" -e "s!Directory /var/www/!Directory $PWD!g" '{}' +; \
+	cp -s wp-config-docker.php wp-config.php
+RUN mkdir /var/www/.vscode-server
+COPY . .

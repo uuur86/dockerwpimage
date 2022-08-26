@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+
+  wordpress_host:
+    depends_on:
+      - mysql_db
+    image: wordpress
+    restart: always
+    ports:
+      - 5555:80
+    environment:
+      WORDPRESS_DB_HOST: mysql_db:3306
+      WORDPRESS_DB_USER: "test1"
+      WORDPRESS_DB_PASSWORD: "testpass1"
+      WORDPRESS_DB_NAME: "testdb"
+      WORDPRESS_TABLE_PREFIX: "testpre_"
+      WORDPRESS_DEBUG: "1"
+      
+
+    volumes:
+      - wordpress_host:/var/www/html
+      - ./../localfiles:/var/www/html:wro
+    networks:
+      - wordpress_net
+    container_name: wordpress_host
+
+  mysql_db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: "testdb"
+      MYSQL_USER: "test1"
+      MYSQL_PASSWORD: "testpass1"
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      - wordpress_net
+    container_name: mysql_db
+
+
+volumes:
+  wordpress_host:
+  mysql_db:
+
+networks:
+  wordpress_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv4: "true"
